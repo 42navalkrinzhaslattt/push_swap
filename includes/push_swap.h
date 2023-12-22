@@ -3,6 +3,7 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <stdint.h>
 # include <stdio.h>
 
 typedef struct s_list
@@ -11,23 +12,34 @@ typedef struct s_list
 	int				value;
 }	t_list;
 
+typedef struct s_stack
+{
+	long	*arr;
+	int		start;
+	int		size;
+}	t_stack;
+
 typedef struct s_data
 {
-	t_list	*lst;
-	int		lst_len;
+	t_stack	a;
+	t_stack	b;
 }	t_data;
 
 //push_swap.c
-void	error_exit(t_data *data, int flag);
 void	init_data(t_data *data, int ac);
-int		ft_strlen(const char *s);
+int		check_doubles(t_data *data);
+void	quick_sort(int *arr, int begin, int end);
 int		check_input(char **av, int ac, t_data *data);
 int		main(int ac, char **av);
-//lst_utils.c
-t_list	*ft_lstnew(int value);
-void	ft_lstadd_back(t_list **lst, t_list *new);
-void	ft_lstadd_front(t_list **lst, t_list *new);
-void	ft_lstclear(t_list **lst);
 
+//operations.c
+void	swap(t_data *data, char flag);
+void	push(t_data *data, char flag);
+void	rotate(t_data *data, char *flag);
+
+//utils.c
+void	error_exit(t_data *data, int flag);
+int		ft_strlen(const char *s);
+void	*ft_memmove(void *dest, const void *src, size_t n);
 
 #endif

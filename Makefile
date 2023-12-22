@@ -1,6 +1,6 @@
 NAME	= push_swap
 
-SRC		= push_swap.c lst_utils.c
+SRC		= push_swap.c operations.c utils.c
 
 BONUS_SRC		= so_long_bonus.c input_check_bonus.c utils_bonus.c hooks_bonus.c render_bonus.c
 
