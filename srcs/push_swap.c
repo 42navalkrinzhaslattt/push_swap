@@ -115,11 +115,13 @@ int	main(int ac, char **av)
 	t_data	data;
 	int	i;
 	int	j;
+
 	init_data(&data, ac);
 	if (ac == 1)
 		error_exit(&data, 1);
 	if (!check_input(av, ac, &data) || !check_doubles(&data))
 		error_exit(&data, 0);
+	merge_sort(&data);
 	printf("stack A:\n");
 	i = data.a.start - 1;
 	j = -1;

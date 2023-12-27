@@ -61,3 +61,18 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 	}
 	return (dest);
 }
+
+int		is_sorted(t_stack stack)
+{
+	int	i;
+
+	i = 0;
+	while (i < stack.size - 1)
+	{
+		if (stack.arr[(stack.start + i) % stack.size]
+			> stack.arr[(stack.start + i + 1) % stack.size])
+			return (0);
+		i++;
+	}
+	return (1);
+}
