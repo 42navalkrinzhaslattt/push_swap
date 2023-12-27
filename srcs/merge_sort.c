@@ -1,17 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   merge_sort.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nam-vu <nam-vu@student.42berlin.de>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/27 17:03:07 by nam-vu            #+#    #+#             */
+/*   Updated: 2023/12/27 17:03:07 by nam-vu           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "push_swap.h"
 //#include "../includes/push_swap.h"
-
-void	stack_align(t_data *data)
-{
-	if (data->a.size > 1)
-		while (data->a.arr[data->a.start]
-			> data->a.arr[(data->a.start + data->a.size - 1) % data->a.size])
-			rotate(data, "a");
-	if (data->b.size > 1)
-		while (data->b.arr[data->b.start]
-			> data->b.arr[(data->b.start + data->b.size - 1) % data->b.size])
-			rotate(data, "b");
-}
 
 void	count_runs_len(t_data *data)
 {
@@ -33,11 +33,13 @@ void	count_runs_len(t_data *data)
 
 void	merge_to_b(t_data *data)
 {
+	if (data->b.size == 0 && is_sorted(data->a))
+		return ;
 	count_runs_len(data);
 	while (data->a.run || data->b.run)
 	{
 		if ((data->b.arr[data->b.start] < data->a.arr[data->a.start]
-			&& data->b.run) || !data->a.run)
+				&& data->b.run) || !data->a.run)
 		{
 			rotate(data, "b");
 			data->b.run--;
@@ -57,7 +59,7 @@ void	merge_to_a(t_data *data)
 	while (data->b.run || data->a.run)
 	{
 		if ((data->a.arr[data->a.start] < data->b.arr[data->b.start]
-			 && data->a.run) || !data->b.run)
+				&& data->a.run) || !data->b.run)
 		{
 			rotate(data, "a");
 			data->a.run--;
@@ -100,30 +102,12 @@ void	split_runs(t_data *data, int *counter)
 	}
 }
 
-void	merge_sort(t_data *data) //need optimization(merge runs in A beforehand), for small cases exceptionally
+void	merge_sort(t_data *data)
 {
 	int		counter;
 	int		flag;
 
 	stack_align(data);
-//	rotate(data, "a");
-//	rotate(data, "a");
-//	rotate(data, "a");
-//	push(data, 'b');
-//	rotate(data, "b");
-//	push(data, 'b');
-//	rotate(data, "b");
-//	push(data, 'b');
-//	rotate(data, "b");
-//	rotate(data, "a");
-//	rotate(data, "a");
-//	rotate(data, "a");
-//	push(data, 'b');
-//	rotate(data, "b");
-//	push(data, 'b');
-//	rotate(data, "b");
-//	push(data, 'b');
-//	rotate(data, "b");
 	while ((data->b.size != 0 || !is_sorted(data->a))
 		&& (data->a.size != 0 || !is_sorted(data->b)))
 	{

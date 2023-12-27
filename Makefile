@@ -2,7 +2,7 @@ NAME	= push_swap
 
 SRC		= push_swap.c operations.c utils.c merge_sort.c
 
-BONUS_SRC		= so_long_bonus.c input_check_bonus.c utils_bonus.c hooks_bonus.c render_bonus.c
+BONUS_SRC		=
 
 SRC_DIR	= srcs/
 

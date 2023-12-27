@@ -62,7 +62,7 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 	return (dest);
 }
 
-int		is_sorted(t_stack stack)
+int	is_sorted(t_stack stack)
 {
 	int	i;
 
@@ -75,4 +75,16 @@ int		is_sorted(t_stack stack)
 		i++;
 	}
 	return (1);
+}
+
+void	stack_align(t_data *data)
+{
+	if (data->a.size > 1)
+		while (data->a.arr[data->a.start]
+			> data->a.arr[(data->a.start + data->a.size - 1) % data->a.size])
+			rotate(data, "a");
+	if (data->b.size > 1)
+		while (data->b.arr[data->b.start]
+			> data->b.arr[(data->b.start + data->b.size - 1) % data->b.size])
+			rotate(data, "b");
 }

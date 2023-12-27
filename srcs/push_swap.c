@@ -113,8 +113,8 @@ int	check_input(char **av, int ac, t_data *data)
 int	main(int ac, char **av)
 {
 	t_data	data;
-	int	i;
-	int	j;
+	int		i;
+	int		j;
 
 	init_data(&data, ac);
 	if (ac == 1)
