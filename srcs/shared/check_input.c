@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push_swap.c                                        :+:      :+:    :+:   */
+/*   check_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nam-vu <nam-vu@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/18 19:56:14 by nam-vu            #+#    #+#             */
-/*   Updated: 2023/12/18 19:56:14 by nam-vu           ###   ########.fr       */
+/*   Created: 2023/12/29 16:58:59 by nam-vu            #+#    #+#             */
+/*   Updated: 2023/12/29 16:58:59 by nam-vu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
-//#include "../includes/push_swap.h"
+#include "shared.h"
 
 void	init_data(t_data *data, int ac)
 {
@@ -30,7 +29,10 @@ void	init_data(t_data *data, int ac)
 		error_exit(data, 0);
 	i = -1;
 	while (++i < ac - 1)
+	{
+		data->a.arr[i] = (long)INT32_MAX + 1;
 		data->b.arr[i] = (long)INT32_MAX + 1;
+	}
 }
 
 void	quick_sort(int *arr, int begin, int end)
@@ -108,32 +110,4 @@ int	check_input(char **av, int ac, t_data *data)
 		data->a.arr[i - 1] = value * sign;
 	}
 	return (1);
-}
-
-int	main(int ac, char **av)
-{
-	t_data	data;
-	int		i;
-	int		j;
-
-	init_data(&data, ac);
-	if (ac == 1)
-		error_exit(&data, 1);
-	if (!check_input(av, ac, &data) || !check_doubles(&data))
-		error_exit(&data, 0);
-	merge_sort(&data);
-	printf("stack A:\n");
-	i = data.a.start - 1;
-	j = -1;
-	if (data.a.size > 0)
-		while (++j < data.a.size)
-			printf("%li\n", data.a.arr[++i % data.a.size]);
-	printf("stack B:\n");
-	i = data.b.start - 1;
-	j = -1;
-	if (data.b.size > 0)
-		while (++j < data.b.size)
-			printf("%li\n", data.b.arr[++i % data.b.size]);
-	free(data.a.arr);
-	free(data.b.arr);
 }

@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
-//#include "../includes/push_swap.h"
+#include "shared.h"
 
 void	error_exit(t_data *data, int flag)
 {
@@ -75,16 +74,4 @@ int	is_sorted(t_stack stack)
 		i++;
 	}
 	return (1);
-}
-
-void	stack_align(t_data *data)
-{
-	if (data->a.size > 1)
-		while (data->a.arr[data->a.start]
-			> data->a.arr[(data->a.start + data->a.size - 1) % data->a.size])
-			rotate(data, "a");
-	if (data->b.size > 1)
-		while (data->b.arr[data->b.start]
-			> data->b.arr[(data->b.start + data->b.size - 1) % data->b.size])
-			rotate(data, "b");
 }

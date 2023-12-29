@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
-//#include "../includes/push_swap.h"
+#include "shared.h"
 
 void	swap(t_data *data, char flag)
 {
