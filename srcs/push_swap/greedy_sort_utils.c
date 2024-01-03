@@ -79,7 +79,7 @@ void	push_back_to_a(t_data *data)
 	}
 	while (data->b.size > 0)
 		push(data, 'a');
-	if (counter != data->a.size)
+	if (!is_sorted(data->a))
 		while (counter-- > 0)
 			rotate(data, "ra");
 }
