@@ -1,95 +1,66 @@
 # Push_swap
 
-*"Because Swap_push doesn't feel as natural"*
+Sorts a list of integers with two stacks and eleven restricted operations, printing the shortest sequence it can find. It uses a greedy "cheapest move" insertion with combined rotations, plus a `checker` program that replays an operation list and verifies the result.
+
+**Stack:** C · Make    **Context:** 42 Berlin curriculum
 
 ## Table of Contents
-- [Project Overview](#project-overview)
 - [The Challenge](#the-challenge)
-- [Algorithm Overview](#algorithm-overview)
-- [My Solution: Greedy Algorithm](#my-solution-greedy-algorithm)
+- [Algorithm: Greedy Cheapest Insertion](#algorithm-greedy-cheapest-insertion)
 - [Operations](#operations)
 - [Project Structure](#project-structure)
-- [Compilation](#compilation)
+- [Build](#build)
 - [Usage](#usage)
-- [Performance Benchmarks](#performance-benchmarks)
 - [Bonus: Checker Program](#bonus-checker-program)
 - [Implementation Details](#implementation-details)
 
-## Project Overview
-
-Push_swap is an algorithmic challenge from 42 School that focuses on sorting data efficiently using a limited set of operations. The goal is to sort a stack of integers using the minimum number of operations possible.
-
-This project teaches:
-- Algorithm optimization and complexity analysis
-- Data structure manipulation (stacks)
-- Problem-solving with constraints
-- Performance optimization
-
 ## The Challenge
 
-You have two stacks named `a` and `b`:
-- **Stack a**: Initially contains a random number of unique integers
-- **Stack b**: Initially empty
-- **Goal**: Sort stack `a` in ascending order (smallest number at the top)
+There are two stacks, `a` and `b`:
+- **Stack a** starts with the input integers (unique, within `int` range)
+- **Stack b** starts empty
+- **Goal:** stack `a` sorted ascending (smallest on top), stack `b` empty, using as few operations as possible
 
-### Constraints
-- Only specific operations are allowed
-- Must achieve sorting with the minimum number of operations
-- No global variables allowed
-- Must handle all edge cases and errors
+The 42 subject grades the operation count: for full marks, 100 numbers must be sorted in fewer than 700 operations and 500 numbers in fewer than 5500.
 
-## Algorithm Overview
+## Algorithm: Greedy Cheapest Insertion
 
-My implementation uses a **Greedy Algorithm** approach, which is efficient for medium to large datasets and consistently performs well within the required benchmarks.
+The first version (see git history) used a merge sort; it was replaced by the greedy approach below.
 
-### Algorithm Strategy:
-1. **Initial Setup**: Push first 2 elements from stack `a` to stack `b`
-2. **Greedy Selection**: For each remaining element in stack `a`, calculate the cost of moving it to its optimal position in stack `b`
-3. **Cost Optimization**: Choose the element with the minimum movement cost
-4. **Efficient Rotation**: Use combined rotations (`rr`, `rrr`) when both stacks need rotation in the same direction
-5. **Final Sorting**: Sort the remaining 3 elements in stack `a` using optimized swaps and rotations
-6. **Push Back**: Push all elements from stack `b` back to stack `a` in the correct order
+### Strategy
+1. **Seed:** if `a` has more than 3 elements, push the first two to `b`.
+2. **Pick the cheapest element:** for every element in `a`, compute how many moves it takes to bring it to the top of `a` while `b` is rotated so the element lands in the right place. `b` is kept in descending (circular) order.
+3. **Push it:** perform those rotations, using `rr` / `rrr` whenever both stacks turn the same way, then `pb`.
+4. Repeat until 3 elements remain in `a`, then sort those 3 with at most two operations.
+5. **Merge back:** rotate `b` so its maximum is on top, then push elements back to `a`, rotating `a` in between so each one lands in order.
 
-## My Solution: Greedy Algorithm
-
-### Core Functions:
-
-#### `greedy_sort()`
-The main sorting function that orchestrates the entire process:
-- Handles initial pushes to stack `b` 
-- Implements the greedy selection loop
-- Calls helper functions for final sorting and cleanup
-
-#### `count_rotates()`
-Calculates the minimum cost to move an element from stack `a` to its correct position in stack `b`:
-- Considers 4 different rotation strategies:
-  1. Both stacks rotate forward (`rr`)
-  2. Both stacks rotate backward (`rrr`) 
-  3. Stack `a` forward, stack `b` backward
-  4. Stack `a` backward, stack `b` forward
-- Selects the strategy with minimum total operations
+### Core Functions
 
 #### `count_position()`
-Finds the optimal insertion position for an element in stack `b`:
-- Maintains stack `b` in descending order
-- Handles edge cases (largest/smallest elements)
-- Returns the index where the element should be inserted
+Returns the index in `b` where a value must be inserted to keep `b` descending. If the value is a new maximum or minimum, it goes above the current maximum.
+
+#### `count_rotates()`
+For element `i` in `a` with target index `j` in `b`, the cost is the minimum of four strategies:
+
+| Strategy | Cost |
+|----------|------|
+| Both stacks rotate up (`rr`) | `max(i, j)` |
+| Both stacks rotate down (`rrr`) | `max(size_a - i, size_b - j)` |
+| `a` up, `b` down | `i + (size_b - j)` |
+| `a` down, `b` up | `(size_a - i) + j` |
+
+The cheapest element and its signed rotation counts are kept for the push step.
 
 #### `push_sorted_elem()`
-Executes the calculated rotations and pushes the element:
-- Optimizes by using combined operations (`rr`, `rrr`) when possible
-- Performs individual rotations when stacks need opposite directions
+Executes the stored rotations (combined while both counts have the same sign, individual otherwise) and pushes the element to `b`.
 
-### Key Optimizations:
+#### `sort_a_under_3()` / `push_back_to_a()`
+Hard-coded sorting for 2 or 3 elements, and the final merge from `b` into `a`.
 
-1. **Combined Rotations**: Uses `rr` and `rrr` to rotate both stacks simultaneously when beneficial
-2. **Smart Position Finding**: Maintains stack `b` in descending order for efficient insertion
-3. **Minimal Operations for Small Sets**: Special handling for 2-3 elements in stack `a`
-4. **Efficient Push-back**: Optimized algorithm to push elements back from stack `b` to stack `a`
+### Complexity
+Choosing each move scans every element of `a` and, for each, every element of `b`, so cost evaluation is O(n²) per push and O(n³) comparisons overall. That is fast enough for the 500-element case the subject targets.
 
 ## Operations
-
-The following operations are available:
 
 | Operation | Description |
 |-----------|-------------|
@@ -111,131 +82,75 @@ The following operations are available:
 push_swap/
 ├── Makefile
 ├── includes/
-│   ├── push_swap.h      # Main program headers
-│   ├── checker.h        # Bonus program headers
-│   ├── shared.h         # Shared structures and functions
-│   └── get_next_line.h  # GNL for bonus
-├── srcs/
-│   ├── push_swap/
-│   │   ├── push_swap.c           # Main program entry point
-│   │   ├── greedy_sort.c         # Core greedy algorithm
-│   │   └── greedy_sort_utils.c   # Helper functions
-│   ├── shared/
-│   │   ├── check_input.c         # Input validation and parsing
-│   │   ├── operations.c          # Stack operations implementation
-│   │   └── utils.c              # Utility functions
-│   └── checker/
-│       ├── checker.c            # Bonus program
-│       ├── get_next_line.c      # Read instructions from stdin
-│       └── get_next_line_utils.c
-└── README.md
+│   ├── push_swap.h      # push_swap prototypes
+│   ├── checker.h        # checker prototypes
+│   ├── shared.h         # t_stack, t_data and shared functions
+│   └── get_next_line.h  # used by checker
+└── srcs/
+    ├── push_swap/
+    │   ├── push_swap.c           # entry point
+    │   ├── greedy_sort.c         # cost computation and main loop
+    │   └── greedy_sort_utils.c   # small-stack sort, merge back, helpers
+    ├── shared/
+    │   ├── check_input.c         # parsing, overflow and duplicate checks
+    │   ├── operations.c          # swap / push / rotate (each prints its name)
+    │   └── utils.c               # error_exit, is_sorted, helpers
+    └── checker/
+        ├── checker.c             # reads operations from stdin and replays them
+        ├── get_next_line.c
+        └── get_next_line_utils.c
 ```
 
-## Compilation
+## Build
 
 ```bash
-# Compile the main program
-make
-
-# Compile the bonus checker
-make bonus
-
-# Clean object files
-make clean
-
-# Full clean (remove executables)
-make fclean
-
-# Recompile everything
-make re
+make          # ./push_swap
+make bonus    # ./checker
+make clean    # remove object files
+make fclean   # remove object files and both binaries
+make re       # fclean + all
 ```
+
+Sources are compiled with `-Wall -Wextra -Werror`; both binaries are linked with `-fsanitize=address -g`.
 
 ## Usage
 
-### Push_swap Program
+### push_swap
 ```bash
-# Basic usage
+# Prints the operations, one per line
 ./push_swap 4 67 3 87 23
 
-# Example output
-pb
-ra
-pb
-rr
-sa
-pa
-pa
-
-# Check number of operations
+# Count the operations
 ./push_swap 4 67 3 87 23 | wc -l
 
-# No arguments (outputs nothing)
+# No arguments, or already sorted input: prints nothing
 ./push_swap
+./push_swap 1 2 3
 
-# Error cases
-./push_swap 42 42          # Duplicates
-./push_swap 42 abc         # Invalid input
-./push_swap 2147483648     # Integer overflow
+# Each of these prints "Error" to stderr
+./push_swap 42 42          # duplicate
+./push_swap 42 abc         # not an integer
+./push_swap 2147483648     # out of int range
 ```
 
-### Checker Program (Bonus)
-```bash
-# Verify a solution
-./push_swap 4 67 3 87 23 | ./checker 4 67 3 87 23
-# Output: OK
-
-# Manual verification
-./checker 3 2 1 0
-rra
-pb
-sa
-rra
-pa
-# Output: OK
-
-# Invalid operations
-./checker 3 2 1 0
-invalid_op
-# Output: Error
-```
-
-## Performance Benchmarks
-
-My implementation consistently meets the required performance standards:
-
-### Required Performance:
-- **100 numbers**: < 700 operations (for 100% score)
-- **500 numbers**: < 5500 operations (for 100% score)
-
-### Minimum Acceptable Performance:
-- **100 numbers**: < 1100 operations (for 80% score)
-- **500 numbers**: < 8500 operations (for 80% score)
-
-### Algorithm Complexity:
-- **Time Complexity**: O(n²) - Each element requires checking positions in the other stack
-- **Space Complexity**: O(n) - Two stacks containing all elements
-- **Operation Count**: Typically achieves well within benchmark requirements
+Each number must be its own argument; a single quoted string such as `"3 2 1"` is rejected. Only a leading `-` is accepted as a sign.
 
 ## Bonus: Checker Program
 
-The bonus `checker` program validates whether a sequence of operations correctly sorts the stack:
+`checker` takes the same arguments as `push_swap`, reads operations from stdin one per line, applies them, and finally prints both stacks followed by `OK` (stack `a` sorted and `b` empty) or `KO`. An unknown operation prints `Error` to stderr. Because it reuses the shared operation functions, it also echoes each executed operation, so the verdict is the last line of output:
 
-### Features:
-- Reads stack from command line arguments
-- Accepts operations from standard input
-- Validates each operation
-- Checks if final result is correctly sorted
-- Comprehensive error handling
-
-### Usage Example:
 ```bash
-# Test with known good solution
-echo -e "sa\npb\npb\npb\nsa\npa\npa\npa" | ./checker 2 1 3 6 5 8
-# Output: OK
+# Verify push_swap's output
+./push_swap 4 67 3 87 23 | ./checker 4 67 3 87 23 | tail -n 1
+# OK
 
-# Test with incorrect solution
-echo -e "sa\nra" | ./checker 2 1 3 6 5 8
-# Output: KO
+# Incorrect sequence
+printf "sa\nra\n" | ./checker 2 1 3 6 5 8 | tail -n 1
+# KO
+
+# Unknown operation
+printf "invalid_op\n" | ./checker 3 2 1 0
+# Error (on stderr)
 ```
 
 ## Implementation Details
@@ -244,32 +159,23 @@ echo -e "sa\nra" | ./checker 2 1 3 6 5 8
 ```c
 typedef struct s_stack
 {
-    long    *arr;    // Array to store stack elements
-    int     start;   // Index of the top element (circular buffer)
-    int     size;    // Current number of elements
-    int     run;     // Maximum capacity
+    long    *arr;    // elements, indexed circularly from start
+    int     start;   // index of the top element
+    int     size;    // current number of elements
+    int     run;     // unused
 } t_stack;
 
 typedef struct s_data
 {
-    t_stack a;       // Stack A
-    t_stack b;       // Stack B
+    t_stack a;
+    t_stack b;
 } t_data;
 ```
 
-### Key Features:
-- **Circular Buffer Implementation**: Efficient rotation operations without data movement
-- **Long Integer Storage**: Prevents overflow during input validation
-- **Memory Management**: Proper allocation and deallocation
-- **Error Handling**: Comprehensive input validation and error reporting
-- **Modular Design**: Separate files for different functionalities
-
-### Algorithm Efficiency:
-The greedy approach ensures that each decision is locally optimal, leading to consistently good global performance. While not always producing the absolute minimum number of operations, it reliably performs within the required benchmarks and handles all edge cases effectively.
+- **Circular indexing:** `ra` / `rra` only move `start`, so rotations are O(1); pushes shift the array with `memmove`.
+- **Input validation:** values are parsed as `long` and rejected as soon as they leave the `int` range; duplicates are found by copying the input and sorting it with a quicksort.
+- **Shared code:** parsing and stack operations are compiled into both `push_swap` and `checker`.
 
 ---
 
-**Author**: nam-vu (42Berlin)  
-**Project**: push_swap (42 School)  
-**Language**: C  
-**Completion**: 2023
+42 Berlin project by Nam Lap Vu ([42navalkrinzhaslattt](https://github.com/42navalkrinzhaslattt)), 2023.

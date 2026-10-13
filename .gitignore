@@ -1,0 +1,5 @@
+*.o
+*.a
+/push_swap
+/checker
+.DS_Store
