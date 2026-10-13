@@ -16,14 +16,14 @@ void	swap(t_data *data, char flag)
 {
 	long	temp;
 
-	if (data->a.size >= 2 && (flag == 'a' || flag == 'r'))
+	if (data->a.size >= 2 && (flag == 'a' || flag == 's'))
 	{
 		temp = data->a.arr[data->a.start];
 		data->a.arr[data->a.start]
 			= data->a.arr[(data->a.start + 1) % data->a.size];
 		data->a.arr[(data->a.start + 1) % data->a.size] = temp;
 	}
-	if (data->b.size >= 2 && (flag == 'b' || flag == 'r'))
+	if (data->b.size >= 2 && (flag == 'b' || flag == 's'))
 	{
 		temp = data->b.arr[data->b.start];
 		data->b.arr[data->b.start]
